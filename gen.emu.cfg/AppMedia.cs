@@ -43,7 +43,7 @@ public class AppMedia
         {
           return;
         }
-        var communityImagesBaseUrl = $"https://shared.fastly.steamstatic.com/community_assets/images/apps/{model.AppId}";
+        var communityImagesBaseUrl = $"https://shared.akamai.steamstatic.com/community_assets/images/apps/{model.AppId}";
         var url = $"{communityImagesBaseUrl}/{hash}.{extension}";
         var data = await Utils.WebRequestAsync(
           url: url,
@@ -63,7 +63,7 @@ public class AppMedia
     {
       commonImagesTask = Utils.ParallelJobsAsync(model.MediaAssets.CommonImages, async (item, _, _, ct) =>
       {
-        var appImagesBaseUrl = $"https://cdn.cloudflare.steamstatic.com/steam/apps/{model.AppId}";
+        var appImagesBaseUrl = $"https://shared.akamai.steamstatic.com/steam/apps/{model.AppId}";
         var url = $"{appImagesBaseUrl}/{item.Name}";
         var data = await Utils.WebRequestAsync(
           url: url,
