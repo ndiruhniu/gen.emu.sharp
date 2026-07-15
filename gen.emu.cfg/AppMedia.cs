@@ -43,7 +43,7 @@ public class AppMedia
         {
           return;
         }
-        var communityImagesBaseUrl = $"https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/apps/{model.AppId}";
+        var communityImagesBaseUrl = $"https://shared.fastly.steamstatic.com/community_assets/images/apps/{model.AppId}";
         var url = $"{communityImagesBaseUrl}/{hash}.{extension}";
         var data = await Utils.WebRequestAsync(
           url: url,
