@@ -28,7 +28,7 @@ jobs:
 
 ##############################
     - name: Publish Linux x64
-      run: dotnet publish /p:PublishProfile=linux-x64.pubxml
+      run: dotnet publish /p:PublishProfile=linux-x64.pubxml /p:DebugSymbols=false /p:DebugType=None
     
     - name: Archive Linux x64
       run: |
@@ -64,7 +64,7 @@ jobs:
 
 ##############################
     - name: Publish Windows x64
-      run: dotnet publish /p:PublishProfile=win-x64.pubxml
+      run: dotnet publish /p:PublishProfile=win-x64.pubxml /p:DebugSymbols=false /p:DebugType=None
 
     - name: Archive Windows x64
       run: |
