@@ -63,7 +63,7 @@ public class AppMedia
     {
       commonImagesTask = Utils.ParallelJobsAsync(model.MediaAssets.CommonImages, async (item, _, _, ct) =>
       {
-        var appImagesBaseUrl = $"https://shared.akamai.steamstatic.com/steam/apps/{model.AppId}";
+        var appImagesBaseUrl = $"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/{model.AppId}";
         var url = $"{appImagesBaseUrl}/{item.Name}";
         var data = await Utils.WebRequestAsync(
           url: url,
