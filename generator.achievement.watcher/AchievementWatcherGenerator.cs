@@ -162,7 +162,7 @@ public class AchievementWatcherGenerator : IGenerator
 
   JsonObject GetSchemaForLang(string lang)
   {
-    const string ICONS_BASE_URL = "https://shared.fastly.steamstatic.com/community_assets/images/apps";
+    const string ICONS_BASE_URL = "https://shared.akamai.steamstatic.com/community_assets/images/apps";
 
     JsonArray achList = [];
     foreach (var ach in appInfoModel.StatsAndAchievements.Achievements.OrderBy(ach => ach.Id))
