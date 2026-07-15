@@ -574,8 +574,8 @@ public class AppStats
   }
 
   static readonly string[] iconsBaseUrls = [
-    "https://cdn.akamai.steamstatic.com/steamcommunity/public/images/apps",
-    "https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/apps",
+    "https://shared.akamai.steamstatic.com/community_assets/images/apps",
+    "https://shared.fastly.steamstatic.com/community_assets/images/apps",
   ];
 
 }
