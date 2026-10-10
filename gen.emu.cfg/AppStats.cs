@@ -243,6 +243,38 @@ public class AppStats
     return (stats, achs);
   }
 
+  /// <summary>
+  /// downloads the global unlock percentage of each achievement and stores it in <see cref="AchievementModel.GlobalPercentage"/>
+  /// </summary>
+  /// <returns>number of achievements which got a percentage</returns>
+  public async Task<int> DownloadAchievementsGlobalPercentagesAsync(IEnumerable<AchievementModel> achievements, uint appid, CancellationToken cancelToken = default)
+  {
+    var handler = Client.Instance.GetSteamClient.GetHandler<UserStatsCustomHandler>();
+    if (handler is null)
+    {
+      throw new InvalidOperationException($"Null stats handler instance");
+    }
+
+    var percentages = await handler.GetGlobalAchievementPercentagesForAppAsync(appid, cancelToken).ConfigureAwait(false);
+    var lookup = new Dictionary<string, double>(StringComparer.OrdinalIgnoreCase);
+    foreach (var (name, percent) in percentages)
+    {
+      lookup[name] = percent;
+    }
+
+    int count = 0;
+    foreach (var ach in achievements)
+    {
+      if (lookup.TryGetValue(ach.InternalName, out var percent))
+      {
+        ach.GlobalPercentage = percent;
+        count++;
+      }
+    }
+
+    return count;
+  }
+
   public Task DownloadAchievementsIconsAsync(IEnumerable<AchievementModel> achievements, uint appid, CancellationToken cancelToken = default)
   {
     var iconsUnlockedFiltered = achievements
