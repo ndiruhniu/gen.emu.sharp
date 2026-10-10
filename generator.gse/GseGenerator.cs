@@ -1245,6 +1245,12 @@ public class GseGenerator : IGenerator
         obj["progress"] = progressJsonNode;
       }
 
+      // global unlock percentage (0.0 - 100.0), optional field read by the emulator's overlay
+      if (ach.GlobalPercentage is double globalPercentage)
+      {
+        obj["unlock_percentage"] = globalPercentage;
+      }
+
       achs.Add(obj);
     }
 
