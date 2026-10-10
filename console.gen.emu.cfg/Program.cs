@@ -262,6 +262,15 @@ async Task GetAllAppInfoAsync(AppInfoModel appModel)
     Log.Instance.Write(Log.Kind.Debug, $"skipping achievements icons");
   }
 
+  if (!ToolArgs.Instance.GetOptions.SkipAchievementsPercentages && !ToolArgs.Instance.GetOptions.IsOfflineMode)
+  {
+    await DownloadAchievementsGlobalPercentages(appModel).ConfigureAwait(false);
+  }
+  else
+  {
+    Log.Instance.Write(Log.Kind.Debug, $"skipping achievements global percentages");
+  }
+
   if (!ToolArgs.Instance.GetOptions.IsOfflineMode)
   {
     await DownloadMediaAssets(appModel).ConfigureAwait(false);
@@ -655,6 +664,36 @@ async Task DownloadAchievementsIcons(AppInfoModel appModel)
       {
         Log.Instance.Write(Log.Kind.Warning, $"No locked achievements icons were downloaded");
       }
+    }
+  }
+  catch (Exception ex)
+  {
+    Log.Instance.WriteException(ex);
+  }
+  Log.Instance.EndSteps(lglvl);
+}
+
+async Task DownloadAchievementsGlobalPercentages(AppInfoModel appModel)
+{
+  if (appModel.StatsAndAchievements.Achievements.Count == 0)
+  {
+    Log.Instance.Write(Log.Kind.Debug, $"no achievements, skipping global percentages");
+    return;
+  }
+
+  var lglvl = Log.Instance.StartSteps("Downloading achievements global unlock percentages");
+  try
+  {
+    int count = await AppStats.Instance.DownloadAchievementsGlobalPercentagesAsync(
+      appModel.StatsAndAchievements.Achievements, appModel.AppId
+    ).ConfigureAwait(false);
+    if (count > 0)
+    {
+      Log.Instance.Write(Log.Kind.Success, $"Downloaded global unlock percentages for [{count}] achievements");
+    }
+    else
+    {
+      Log.Instance.Write(Log.Kind.Warning, $"No achievements global unlock percentages were downloaded");
     }
   }
   catch (Exception ex)

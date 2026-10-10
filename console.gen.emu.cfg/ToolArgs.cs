@@ -74,6 +74,10 @@ public class ToolArgs
       HelpText = "skip downloading achievements icons")]
     public bool SkipAchievementsIcons { get; private set; }
 
+    [Option("noachpercent", Default = false, Required = false,
+      HelpText = "skip downloading the global unlock percentage of each achievement")]
+    public bool SkipAchievementsPercentages { get; private set; }
+
 
 
     [Option("icons", Default = false, Required = false,
