@@ -148,6 +148,76 @@ public class UserStatsCustomHandler : ClientMsgHandler
     return results.Where(r => r != default).ToArray();
   }
 
+  // https://partner.steamgames.com/doc/webapi/isteamuserstats#GetGlobalAchievementPercentagesForApp
+  // https://steamapi.xpaw.me/#ISteamUserStats/GetGlobalAchievementPercentagesForApp
+  // doesn't require an API key
+  public async Task<(string AchName, double Percent)[]> GetGlobalAchievementPercentagesForAppAsync(uint appid, CancellationToken ct = default)
+  {
+    if (appid == 0)
+    {
+      throw new InvalidOperationException($"Invalid appid");
+    }
+
+    // the returned json looks like this:
+    //
+    // {
+    //   "achievementpercentages":{
+    //     "achievements":[
+    //       { "name":"ACH_WIN_ONE_GAME", "percent":78.9000015258789 },
+    //       { "name":"ACH_WIN_100_GAMES", "percent":"12.3" }
+    //     ]
+    //   }
+    // }
+    //
+    // the "percent" value can be a number or a string depending on the endpoint version
+
+    var respBytes = await Utils.WebRequestAsync(
+      url: $"https://api.steampowered.com/ISteamUserStats/GetGlobalAchievementPercentagesForApp/v2/",
+      urlParams: new JsonObject
+      {
+        ["gameid"] = appid,
+      },
+      method: Utils.WebMethod.Get,
+      cancelToken: ct
+    ).ConfigureAwait(false);
+    if (respBytes is null || respBytes.Length == 0)
+    {
+      string err = $"Failed to get a web response for the global achievements percentages of appid {appid}";
+      Log.Instance.Write(Log.Kind.Debug, err);
+      throw new InvalidOperationException(err);
+    }
+
+    var respStr = Encoding.UTF8.GetString(respBytes);
+    var jnode = JsonNode.Parse(respStr);
+    var achsArr = jnode.GetKeyIgnoreCase("achievementpercentages", "achievements") as JsonArray;
+    if (achsArr is null)
+    {
+      string err = $"Unexpected response format for the global achievements percentages of appid {appid}";
+      Log.Instance.Write(Log.Kind.Debug, err);
+      throw new InvalidOperationException(err);
+    }
+
+    List<(string AchName, double Percent)> results = [];
+    foreach (var item in achsArr)
+    {
+      var name = item.GetKeyIgnoreCase("name").ToStringSafe();
+      if (string.IsNullOrEmpty(name))
+      {
+        continue;
+      }
+      if (!item.GetKeyIgnoreCase("percent").TryConvertToNum(out var percent) || !double.IsFinite(percent))
+      {
+        continue;
+      }
+
+      // the API returns a float32 converted to double: 78.9000015258789 -> 78.9
+      percent = Math.Round(Math.Clamp(percent, 0.0, 100.0), 2, MidpointRounding.AwayFromZero);
+      results.Add((name, percent));
+    }
+
+    return results.ToArray();
+  }
+
   public override void HandleMsg(IPacketMsg packetMsg)
   {
     // this function is called when a message arrives from the Steam network
