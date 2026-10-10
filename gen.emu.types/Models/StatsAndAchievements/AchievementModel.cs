@@ -33,4 +33,8 @@ public class AchievementModel
 
   public JsonObject? ProgressDetails { get; set; } = null;
 
+  // global unlock percentage of this achievement among all players (0.0 - 100.0)
+  // null = unknown (not downloaded)
+  public double? GlobalPercentage { get; set; } = null;
+
 }
